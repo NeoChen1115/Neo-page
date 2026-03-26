@@ -529,7 +529,13 @@ $$MAPE = \frac{1}{n}\sum_{i=1}^{n}\left|\frac{y_i - \hat{y}_i}{y_i}\right| \time
 
 **Conclusion**: Linear Regression is optimal for all stocks
 
-#### 5.3.2 Model Characteristics Analysis
+#### 5.3.2 Overall Model Performance Visualization
+
+![Model Performance Comparison](results/visualizations/model_performance_comparison.png)
+
+*Figure 1: Overall model performance comparison across all 5 stocks. Linear Regression shows superior average RMSE performance.*
+
+#### 5.3.3 Model Characteristics Analysis
 
 **Linear Regression Advantages**:
 - ✅ Most stable (top 1-2 on all 5 stocks)
@@ -615,7 +621,18 @@ $$MAPE = \frac{1}{n}\sum_{i=1}^{n}\left|\frac{y_i - \hat{y}_i}{y_i}\right| \time
 | 2025-10-16 | 5.92 | 5.87 | -0.05 | -0.8% |
 | 2025-10-17 | 6.03 | 6.08 | +0.05 | +0.8% |
 
-#### 6.1.2 Challenging Case: 0005.HK
+**Prediction Visualization**:
+![0288.HK Prediction Comparison](results/visualizations/0288.HK_comparison.png)
+
+*Figure 2: 0288.HK prediction comparison - Linear Regression (RMSE: 0.106) shows best performance with closely aligned predictions and actual prices.*
+
+#### 6.1.2 Strong Performance Case: 0002.HK
+
+![0002.HK Prediction Comparison](results/visualizations/0002.HK_comparison.png)
+
+*Figure 3: 0002.HK prediction comparison - Linear Regression and Decision Tree both perform well on this stock.*
+
+#### 6.1.3 Challenging Case: 0005.HK
 
 **Best Model**: Linear Regression  
 **RMSE**: 1.189
@@ -629,6 +646,21 @@ $$MAPE = \frac{1}{n}\sum_{i=1}^{n}\left|\frac{y_i - \hat{y}_i}{y_i}\right| \time
 - Training data max: 56.74 HKD
 - Test data max: 110.80 HKD
 - Out of range **95%** → Decision Tree cannot extrapolate → Constant prediction
+
+**Prediction Visualization**:
+![0005.HK Prediction Comparison](results/visualizations/0005.HK_comparison.png)
+
+*Figure 4: 0005.HK prediction comparison - Decision Tree (RMSE: 27.514) shows severe data drift issue with constant predictions. Linear Regression and LSTM handle better.*
+
+#### 6.1.4 Additional Stock Predictions
+
+![2318.HK Prediction Comparison](results/visualizations/2318.HK_comparison.png)
+
+*Figure 5: 2318.HK prediction comparison - Volatile stock with all three models tracking actual price trends.*
+
+![3690.HK Prediction Comparison](results/visualizations/3690.HK_comparison.png)
+
+*Figure 6: 3690.HK prediction comparison - High volatility stock showing model performance variations.*
 
 ### 6.2 Key Findings
 

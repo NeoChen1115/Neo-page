@@ -75,18 +75,18 @@ This report follows a standard data analysis workflow: data collection → prepr
 
 **Stock Selection**: Listed companies on the Hong Kong Exchanges and Clearing Limited (HKEX)
 
-| Stock Code | Company Name | Industry | Data Period |
-|-----------|-------------|---------|------------|
-| 2318.HK | Ping An Insurance | Finance | ~1967 days |
-| 3690.HK | Meituan | Internet | ~1967 days |
-| 0288.HK | Golden Bull Limited | Small Cap | ~1967 days |
-| 0002.HK | CLP Holdings | Utilities | ~1967 days |
-| 0005.HK | HSBC Holdings | Finance | ~1967 days |
+| Stock Code | Company Name | Industry | Date Range | Total Records |
+|-----------|-------------|---------|------------|---------------|
+| 2318.HK | Ping An Insurance | Finance | 2017/10/27 - 2025/10/23 | 1967 |
+| 3690.HK | Meituan | Internet | 2017/10/27 - 2025/10/23 | 1967 |
+| 0288.HK | Golden Bull Limited | Small Cap | 2017/10/27 - 2025/10/23 | 1967 |
+| 0002.HK | CLP Holdings | Utilities | 2017/10/27 - 2025/10/23 | 1967 |
+| 0005.HK | HSBC Holdings | Finance | 2017/10/27 - 2025/10/23 | 1967 |
 
 **Data Characteristics**:
-- Time Range: Approximately 5 years of historical data
-- Data Frequency: Daily close
-- Data Features: OHLCV (Open, High, Low, Close, Volume)
+- **Time Range**: October 27, 2017 to October 23, 2025 (~8 years of historical data)
+- **Data Frequency**: Daily close
+- **Data Features**: OHLCV (Open, High, Low, Close, Volume)
 
 ### 3.2 Key Data Description
 
@@ -156,15 +156,17 @@ Preprocessed Data → Input to Models → Generate Predictions
 
 #### Stock Data Overview
 
-| Stock | Records | Close Range | Avg Price | Volatility |
-|------|---------|-----------|-----------|-----------|
-| 0288.HK | 1967 | 2.98-8.56 | 5.12 | Moderate |
-| 0002.HK | 1967 | 28.50-102.50 | 56.34 | High |
-| 2318.HK | 1967 | 3.50-25.80 | 14.62 | High |
-| 0005.HK | 1967 | 20.96-110.80 | 58.93 | **Very High** |
-| 3690.HK | 1967 | 32.50-235.40 | 98.76 | Very High |
+| Stock | Records | Close Range | Avg Price | Volatility | Date Range |
+|------|---------|-----------|-----------|-----------|------------|
+| 0288.HK | 1967 | 2.98-8.56 | 5.12 | Moderate | 2017/10/27 - 2025/10/23 |
+| 0002.HK | 1967 | 28.50-102.50 | 56.34 | High | 2017/10/27 - 2025/10/23 |
+| 2318.HK | 1967 | 3.50-25.80 | 14.62 | High | 2017/10/27 - 2025/10/23 |
+| 0005.HK | 1967 | 20.96-110.80 | 58.93 | **Very High** | 2017/10/27 - 2025/10/23 |
+| 3690.HK | 1967 | 32.50-235.40 | 98.76 | Very High | 2017/10/27 - 2025/10/23 |
 
 **Key Observations**:
+- All stocks have complete data from October 27, 2017 to October 23, 2025
+- 8-year historical period covering multiple market cycles
 - All stocks have complete data with no severe missing values
 - 0005.HK shows significant price fluctuations (max is 5x min)
 - Different stocks have vastly different price ranges requiring separate modeling
@@ -249,9 +251,7 @@ $$\hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... + \beta_n x_n$$
 - Output: predicted closing price for next day
 
 **Configuration**:
-```python
-model = LinearRegression(fit_intercept=True)
-```
+The model uses default scikit-learn parameters with fit_intercept=True for optimal results.
 
 **Advantages**:
 - Fast computation (<1 second for 5 stocks)
@@ -273,14 +273,10 @@ model = LinearRegression(fit_intercept=True)
 - Based on CART (Classification And Regression Trees) algorithm
 
 **Optimized Configuration**:
-```python
-model = DecisionTreeRegressor(
-    max_depth=6,           # Limit tree depth
-    min_samples_split=15,  # Minimum samples to split
-    min_samples_leaf=5,    # Minimum samples in leaf
-    random_state=42
-)
-```
+- Maximum tree depth: 6 (reduced from 10 for better generalization)
+- Minimum samples to split: 15 (increased from 5 to prevent overfitting)
+- Minimum samples in leaf: 5 (newly added to improve stability)
+- Random state: 42 for reproducibility
 
 **Optimization History**:
 
@@ -333,20 +329,20 @@ Output Layer (1 unit)
 ```
 
 **Configuration**:
-```python
-model = Sequential([
-    LSTM(100, activation='relu', return_sequences=True,
-         input_shape=(30, n_features)),
-    Dropout(0.1),
-    LSTM(50, activation='relu'),
-    Dropout(0.1),
-    Dense(25, activation='relu'),
-    Dense(1)
-])
+The LSTM network is implemented with the following architecture:
+- First LSTM layer: 100 units with ReLU activation and return sequences enabled
+- Dropout layer: 0.1 to prevent overfitting
+- Second LSTM layer: 50 units with ReLU activation
+- Additional dropout layer: 0.1 for regularization
+- Dense layer: 25 units with ReLU activation
+- Output layer: 1 unit for single price prediction
 
-model.compile(optimizer='adam', loss='mse')
-model.fit(X_train, y_train, epochs=100, batch_size=32, verbose=0)
-```
+Training parameters:
+- Optimizer: Adam
+- Loss function: Mean Squared Error (MSE)
+- Epochs: 100
+- Batch size: 32
+- Verbose: No logging during training
 
 **Key Innovation: Data Normalization**
 
@@ -428,29 +424,20 @@ Test:     [53.50, ......, 110.80]
 - Decision Tree not recommended for 0005.HK
 - Other 4 stocks perform well
 
-### 4.5 Data Processing Code Examples
+### 4.5 Model Implementation Summary
 
-```python
-# Feature Selection
-selector = FeatureSelector(data)
-best_features = selector.find_best_features()
-# Output: {'stock': '0288.HK', 'features': ['Close'], 'rmse': 0.12}
+The complete implementation includes:
+- **Data pipeline**: Automated loading, cleaning, and feature engineering
+- **Feature selection**: Systematic evaluation of feature combinations per stock
+- **Model training**: Parallel training of three models with optimized parameters
+- **Result evaluation**: Comprehensive performance metrics and error analysis
+- **Output generation**: CSV predictions and visualization charts
 
-# Data Splitting
-X_train, X_test, y_train, y_test = DataProcessor.split_data(
-    data, train_ratio=0.8
-)
-
-# Model Training
-lr_model = LinearRegressionModel()
-dt_model = DecisionTreeModel()
-lstm_model = LSTMModel()
-
-# Predictions
-lr_pred = lr_model.predict(X_test)
-dt_pred = dt_model.predict(X_test)
-lstm_pred = lstm_model.predict(X_test)
-```
+All implementations follow best practices for time series analysis:
+- Maintaining temporal order in train-test split (no shuffling)
+- Individual scaler fitting on training data only
+- Prevention of data leakage through proper sequence handling
+- Reproducible results with random seeds
 
 ---
 
@@ -825,18 +812,19 @@ Linear Regression performs best on all 5 stocks, indicating:
 
 ### A. Code Usage Instructions
 
-```bash
-# 1. Install dependencies
-pip install -r requirements.txt
+The project uses a complete Python pipeline for stock prediction:
 
-# 2. Run complete pipeline
-python main.py
+**Step 1: Install Dependencies**
+All required Python packages are listed in requirements.txt. Installation is straightforward using pip package manager.
 
-# 3. View results
-# results/model_comparison.csv      # Performance ranking
-# results/*_predictions.csv         # Prediction results
-# results/visualizations/           # Prediction plots
-```
+**Step 2: Run Complete Pipeline**
+Execute the main script to process all data, train models, and generate predictions. The process takes approximately 4-8 minutes depending on hardware.
+
+**Step 3: View Results**
+After execution, the results directory contains:
+- Model performance ranking in CSV format
+- Individual stock predictions with dates and errors
+- Visualization plots for each stock comparison
 
 ### B. Output Files List
 

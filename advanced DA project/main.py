@@ -191,7 +191,7 @@ class StockPredictionPipeline:
         for stock_name, stock_results in self.results.items():
             # 为每个股票生成图表
             fig, axes = plt.subplots(2, 2, figsize=(16, 10))
-            fig.suptitle(f'{stock_name} - 模型预测对比', fontsize=16, fontweight='bold')
+            fig.suptitle(f'{stock_name} - Model Prediction Comparison', fontsize=16, fontweight='bold')
             
             test_data = stock_results['test_data']
             test_dates = stock_results['test_dates']
